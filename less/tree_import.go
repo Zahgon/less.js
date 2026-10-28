@@ -199,7 +199,7 @@ func (im *Import) doEval(ctx *evalContext) Node {
 			if e, isExpr := fv[0].(*Expression); isExpr && len(e.value) >= 2 && layerFeature(e.value) {
 				im.layerCss = true
 				joined := newExpression(append([]Node{}, e.value[:2]...), false)
-				joined.noSpacing = true
+				joined.noSpacing = triTrue
 				e.value = append([]Node{joined}, e.value[2:]...)
 				return im
 			}
@@ -217,7 +217,7 @@ func (im *Import) doEval(ctx *evalContext) Node {
 			if inner, isList := arrayValue(fv[0]); isList && len(inner) >= 2 && layerFeature(inner) {
 				im.css = true
 				joined := newExpression(append([]Node{}, inner[:2]...), false)
-				joined.noSpacing = true
+				joined.noSpacing = triTrue
 				setArrayValue(fv[0], append([]Node{joined}, inner[2:]...))
 				return im
 			}

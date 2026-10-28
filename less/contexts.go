@@ -148,7 +148,9 @@ func (c *evalContext) enterCalc() {
 }
 
 func (c *evalContext) exitCalc() {
-	c.calcStack = c.calcStack[:len(c.calcStack)-1]
+	if len(c.calcStack) > 0 {
+		c.calcStack = c.calcStack[:len(c.calcStack)-1]
+	}
 	if len(c.calcStack) == 0 {
 		c.inCalc = false
 	}

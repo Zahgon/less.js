@@ -16,12 +16,22 @@ type AtRule struct {
 	isRooted     bool
 }
 
-func newAtRule(name string, value Node, keywordList []Node, rules []Node, index int, fi *FileInfo, dbg *debugInfo, isRooted bool, vis *visibilityInfo) *AtRule {
+// newAtRule is new AtRule(...). The parser passes its block as a single Ruleset (block), evaluation passes an
+// array of rules.
+func newAtRule(name string, value Node, block *Ruleset, rules []Node, index int, fi *FileInfo, dbg *debugInfo, isRooted bool, vis *visibilityInfo) *AtRule {
 	a := &AtRule{name: name, value: value}
-	if keywordList != nil {
-		a.value = &Anonymous{valueNode: &nodeList{nodes: keywordList}}
-	}
-	if rules != nil {
+	if block != nil {
+		if declarationsBlock(block.rules, false) && !isRooted && value == nil {
+			a.simpleBlock = true
+			a.declarations = block.rules
+		} else {
+			a.rules = []Node{block}
+			block.selectors = newSelector([]Node{}, nil, nil, index, fi, nil).createEmptySelectors()
+			block.allowImports = true
+		}
+		setParents(a.declarations, a)
+		setParents(a.rules, a)
+	} else if rules != nil {
 		allDecls := declarationsBlock(rules, false)
 		allRulesetDecls := true
 		for _, r := range rules {
@@ -329,10 +339,10 @@ func (m *Media) evalFunction() {
 	}
 	for i := 0; i < len(vals); i++ {
 		expr := vals[i]
-		if (expr.Type() == "Keyword" || expr.Type() == "Variable") && i+1 < len(vals) {
-			if p, isParen := vals[i+1].(*Paren); isParen && p.noSpacing {
-				e := newExpression([]Node{expr, p}, false)
-				e.noSpacing = true
+		ns := expr.base().noSpacing
+		if (expr.Type() == "Keyword" || expr.Type() == "Variable") && i+1 < len(vals) && (ns.truthy() || ns == triUndefined) {
+			if p, isParen := vals[i+1].(*Paren); isParen && p.noSpacing.truthy() {
+				e := newExpression([]Node{expr, p}, true)
 				vals[i] = e
 				vals = append(vals[:i+1], vals[i+2:]...)
 			}

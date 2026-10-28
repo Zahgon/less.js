@@ -42,7 +42,19 @@ type cmpResult int
 
 const cmpNone cmpResult = -99
 
+// triBool is a JavaScript property that may be undefined, false or true.
+type triBool int8
+
+const (
+	triUndefined triBool = iota
+	triFalse
+	triTrue
+)
+
+func (t triBool) truthy() bool { return t == triTrue }
+
 type nodeBase struct {
+	noSpacing        triBool // Expression.eval copies noSpacing onto any node it returns
 	parent           Node
 	index            int
 	fileInfo         *FileInfo

@@ -34,6 +34,10 @@ func fnEach(fc *funcCaller, list, rs Node) Node {
 		for _, n := range l.value {
 			iterator = append(iterator, tryEval(n))
 		}
+	case *nodeList:
+		for _, n := range l.nodes {
+			iterator = append(iterator, tryEval(n))
+		}
 	case *DetachedRuleset:
 		iterator = l.ruleset.eval(fc.ctx).(*Ruleset).rules
 	case *Ruleset:

@@ -268,7 +268,7 @@ func (r *Ruleset) makeImportant() Node {
 	return newRuleset(r.selectors, rules, r.strictImports, r.visibilityInfo())
 }
 
-func (r *Ruleset) matchArgs(args []mixinArg) bool { return len(args) == 0 }
+func (r *Ruleset) matchArgs(args []mixinArg, _ *evalContext) bool { return len(args) == 0 }
 
 func (r *Ruleset) matchCondition(args []mixinArg, ctx *evalContext) bool {
 	last := r.selectors[len(r.selectors)-1]

@@ -4,16 +4,20 @@ package less
 type Expression struct {
 	nodeBase
 	value      []Node
-	noSpacing  bool
 	parens     bool
 	parensInOp bool
 }
 
+// newExpression is new Expression(value, noSpacing); a false noSpacing leaves the property undefined.
 func newExpression(v []Node, noSpacing bool) *Expression {
 	if v == nil {
 		v = []Node{}
 	}
-	return &Expression{value: v, noSpacing: noSpacing}
+	e := &Expression{value: v}
+	if noSpacing {
+		e.noSpacing = triTrue
+	}
+	return e
 }
 
 func (e *Expression) Type() string { return "Expression" }
@@ -37,7 +41,9 @@ func (e *Expression) eval(ctx *evalContext) Node {
 		for i, n := range e.value {
 			vals[i] = evalNode(n, ctx)
 		}
-		ret = newExpression(vals, e.noSpacing)
+		ne := newExpression(vals, false)
+		ne.noSpacing = e.noSpacing
+		ret = ne
 	case len(e.value) == 1:
 		if first, ok := e.value[0].(*Expression); ok && first.parens && !first.parensInOp && !ctx.inCalc {
 			doubleParen = true
@@ -54,13 +60,16 @@ func (e *Expression) eval(ctx *evalContext) Node {
 			ret = newParen(ret)
 		}
 	}
+	if b := ret.base(); !b.noSpacing.truthy() {
+		b.noSpacing = e.noSpacing
+	}
 	return ret
 }
 
 func (e *Expression) genCSS(ctx *evalContext, out *output) {
 	for i, n := range e.value {
 		genCSS(n, ctx, out)
-		if !e.noSpacing && i+1 < len(e.value) {
+		if !e.noSpacing.truthy() && i+1 < len(e.value) {
 			if a, ok := e.value[i+1].(*Anonymous); !ok || a.valueNode != nil || a.value != "," {
 				out.add(" ")
 			}
@@ -82,7 +91,6 @@ func (e *Expression) throwAwayComments() {
 type Paren struct {
 	nodeBase
 	value      Node
-	noSpacing  bool
 	parensInOp bool
 }
 
@@ -104,8 +112,8 @@ func (p *Paren) genCSS(ctx *evalContext, out *output) {
 
 func (p *Paren) eval(ctx *evalContext) Node {
 	r := newParen(evalNode(p.value, ctx))
-	if p.noSpacing {
-		r.noSpacing = true
+	if p.noSpacing.truthy() {
+		r.noSpacing = triTrue
 	}
 	return r
 }

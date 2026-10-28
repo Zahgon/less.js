@@ -1878,17 +1878,23 @@ func (p *parser) mediaFeature(queryInParens bool) Node {
 					q = newQueryInParens("", nil, nil, "", nil, 0)
 				}
 				paren := newParen(q)
-				paren.noSpacing = !spacing
+				if !spacing {
+					paren.noSpacing = triTrue
+				}
 				nodes = append(nodes, paren)
 				e = cond
 			case hasP && e != nil:
 				paren := newParen(newDeclaration(nil, prop, e, "", "", p.in.i+p.currentIndex, p.fileInfo, true, nil))
-				paren.noSpacing = !spacing
+				if !spacing {
+					paren.noSpacing = triTrue
+				}
 				nodes = append(nodes, paren)
 				spacing = false
 			case e != nil:
 				paren := newParen(e)
-				paren.noSpacing = !spacing
+				if !spacing {
+					paren.noSpacing = triTrue
+				}
 				nodes = append(nodes, paren)
 				spacing = false
 			default:
@@ -1903,8 +1909,8 @@ func (p *parser) mediaFeature(queryInParens bool) Node {
 	if len(nodes) > 0 {
 		expr := newExpression(nodes, false)
 		if len(nodes) == 2 && (nodes[0].Type() == "Keyword" || nodes[0].Type() == "Variable") {
-			if par, ok := nodes[1].(*Paren); ok && par.noSpacing {
-				expr.noSpacing = true
+			if par, ok := nodes[1].(*Paren); ok && par.noSpacing.truthy() {
+				expr.noSpacing = triTrue
 			}
 		}
 		return expr
@@ -1934,6 +1940,9 @@ func (p *parser) mediaFeatures(queryInParens bool) []Node {
 		features = append(features, e)
 		if !p.in.char(',') {
 			break
+		}
+		if b := e.base(); !b.noSpacing.truthy() {
+			b.noSpacing = triFalse
 		}
 	}
 	return features
@@ -2165,11 +2174,7 @@ func (p *parser) atrule() Node {
 		if p.context("dumpLineNumbers").dumpLineNumbers != "" {
 			dbg = p.getDebugInfo(index)
 		}
-		var ruleList []Node
-		if rules != nil {
-			ruleList = []Node{rules}
-		}
-		return newAtRule(name, value, keywordList, ruleList, index+p.currentIndex, p.fileInfo, dbg, isRooted, nil)
+		return newAtRule(name, value, rules, nil, index+p.currentIndex, p.fileInfo, dbg, isRooted, nil)
 	}
 	p.in.restore("at-rule options not recognised")
 	return nil
