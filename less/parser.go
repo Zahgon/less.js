@@ -401,7 +401,7 @@ func (p *parser) parse(str string, additional *Options) (root *Ruleset, err *err
 		return nil, err
 	}
 	end := p.in.end()
-	if !end.isFinished {
+	if !end.isFinished && root != nil {
 		message := end.furthestMessage
 		if message == "" {
 			message = "Unrecognised input"
@@ -414,7 +414,7 @@ func (p *parser) parse(str string, additional *Options) (root *Ruleset, err *err
 				message += ". Possibly missing something"
 			}
 		}
-		return nil, newLessError(&errorInfo{Type: "Parse", Message: message, Index: intp(end.furthest), Filename: p.fileInfo.Filename}, p.imports, "")
+		return root, newLessError(&errorInfo{Type: "Parse", Message: message, Index: intp(end.furthest), Filename: p.fileInfo.Filename}, p.imports, "")
 	}
 	return root, nil
 }

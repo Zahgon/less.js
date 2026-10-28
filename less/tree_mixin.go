@@ -30,9 +30,11 @@ func (m *MixinCall) accept(v visitor) {
 			m.selector = s
 		}
 	}
-	for _, a := range m.arguments {
-		if a.value != nil {
-			v.visitAny(a.value)
+	if _, generic := v.(*Visitor); generic {
+		for _, a := range m.arguments {
+			if a.value != nil {
+				v.visitAny(a.value)
+			}
 		}
 	}
 }
@@ -290,9 +292,11 @@ func (md *MixinDefinition) Type() string { return "MixinDefinition" }
 func (md *MixinDefinition) base() *nodeBase { return &md.Ruleset.nodeBase }
 
 func (md *MixinDefinition) accept(v visitor) {
-	for _, p := range md.params {
-		if p.value != nil {
-			v.visitAny(p.value)
+	if _, generic := v.(*Visitor); generic {
+		for _, p := range md.params {
+			if p.value != nil {
+				v.visitAny(p.value)
+			}
 		}
 	}
 	md.rules = v.visitArray(md.rules)

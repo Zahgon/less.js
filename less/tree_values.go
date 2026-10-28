@@ -83,7 +83,9 @@ func (a *Anonymous) genCSS(ctx *evalContext, out *output) {
 	a.nodeVisible = &visible
 	if visible {
 		s := a.value
-		if a.valueNode != nil {
+		if u, ok := a.valueNode.(*Unit); ok {
+			s = u.String()
+		} else if a.valueNode != nil {
 			s = "[object Object]"
 		}
 		out.addAt(s, a.fileInfo, a.index, a.mapLines)

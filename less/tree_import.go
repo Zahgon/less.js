@@ -7,6 +7,7 @@ type Import struct {
 	path             Node
 	features         Node
 	css              bool
+	cssDefined       bool // css was set by the constructor (it stays undefined otherwise)
 	layerCss         bool
 	root             Node // the imported file's root Ruleset
 	rootText         *string
@@ -28,8 +29,10 @@ func newImportVis(path, features Node, opts *importOptions, index int, fi *FileI
 	im.fileInfo = fi
 	if opts.less != nil || isTrue(opts.inline) {
 		im.css = !isTrue(opts.less) || isTrue(opts.inline)
+		im.cssDefined = true
 	} else if p, ok := im.getPath(); ok && p != "" && reCSSImportPath.Test(p) {
 		im.css = true
+		im.cssDefined = true
 	}
 	im.copyVisibilityInfo(vis)
 	if features != nil {

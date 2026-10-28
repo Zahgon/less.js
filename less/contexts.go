@@ -119,7 +119,6 @@ func newEvalContext(o *Options, frames []Node) *evalContext {
 		c.urlArgs = o.URLArgs
 		c.javascriptEnabled = o.JavascriptEnabled
 		c.rewriteUrls = o.RewriteUrls
-		c.dumpLineNumbers = o.DumpLineNumbers
 	}
 	return c
 }
@@ -140,7 +139,6 @@ func (c *evalContext) copyEval(frames []Node) *evalContext {
 		rewriteUrls:       c.rewriteUrls,
 		frames:            frames,
 		mathOn:            true,
-		dumpLineNumbers:   c.dumpLineNumbers,
 	}
 }
 
