@@ -50,6 +50,9 @@ func (t *toCSSVisitor) resolveVisibility(n Node) Node {
 		return n
 	}
 	rules, _ := rulesOf(n)
+	if len(rules) == 0 {
+		return nil
+	}
 	body := rules[0]
 	if rs, ok := body.(*Ruleset); ok && rs.rules != nil {
 		var kept []Node
