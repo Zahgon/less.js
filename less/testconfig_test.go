@@ -20,6 +20,7 @@ var testDataDir = func() string {
 
 // lessConfig is the language.less object of a styles.config.json, with the variable objects kept in key order.
 type lessConfig struct {
+	dir        string // the folder of the styles.config.json; a relative sourceMapBasepath is resolved against it
 	values     map[string]json.RawMessage
 	globalVars []VarOption
 	modifyVars []VarOption
@@ -46,7 +47,9 @@ func findConfig(t *testing.T, dir string) *lessConfig {
 		if err := json.Unmarshal(data, &file); err != nil {
 			t.Fatalf("%s: %v", d, err)
 		}
-		return parseLessConfig(t, file.Language.Less)
+		c := parseLessConfig(t, file.Language.Less)
+		c.dir = d
+		return c
 	}
 	return &lessConfig{values: map[string]json.RawMessage{}}
 }
@@ -186,6 +189,9 @@ func (c *lessConfig) options(filename string) *Options {
 			DisableSourcemapAnnotation bool   `json:"disableSourcemapAnnotation"`
 		}
 		_ = json.Unmarshal(v, &sm)
+		if sm.SourceMapBasepath != "" && !filepath.IsAbs(sm.SourceMapBasepath) && c.dir != "" {
+			sm.SourceMapBasepath = filepath.Join(c.dir, sm.SourceMapBasepath)
+		}
 		o.SourceMap = &SourceMapOptions{SourceMapFileInline: sm.SourceMapFileInline,
 			SourceMapRootpath: sm.SourceMapRootpath, SourceMapBasepath: sm.SourceMapBasepath,
 			SourceMapURL: sm.SourceMapURL, OutputSourceFiles: sm.OutputSourceFiles,

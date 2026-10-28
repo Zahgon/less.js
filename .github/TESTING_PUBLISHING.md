@@ -25,7 +25,8 @@ The fixtures are the shared ones in `packages/test-data`, run by `less/*_test.go
 | `TestWarnings`, `TestDisablePluginRule`, `TestNoOptions` | inline stylesheets | the warnings and errors each must raise |
 
 Each fixture runs with the options of the nearest `styles.config.json` at or above its folder (`language.less`:
-`math`, `strictUnits`, `rewriteUrls`, `rootpath`, `sourceMap`, `globalVars` and the rest). Placeholders in the
+`math`, `strictUnits`, `rewriteUrls`, `rootpath`, `sourceMap`, `globalVars` and the rest; a relative
+`sourceMap.sourceMapBasepath` is resolved against the folder of the `styles.config.json`). Placeholders in the
 expectations (`{path}`, `{pathesc}`, `{pathimport}`, `{pathrel}`) are replaced with the fixture's folder before
 comparing. Fixtures that need a JavaScript plugin, inline JavaScript evaluation, an npm module or a network import
 are skipped with the reason.

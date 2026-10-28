@@ -2,7 +2,7 @@
   "language": {
     "less": {
       "sourceMap": {
-        "sourceMapBasepath": "/Users/macbookpro/Desktop/untitled folder 3/candidates/migrated/less.js/packages/test-data/tests-config/sourcemaps-basepath",
+        "sourceMapBasepath": ".",
         "sourceMapRootpath": "testweb/"
       }
     }
