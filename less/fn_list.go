@@ -45,6 +45,10 @@ func fnEach(fc *funcCaller, list, rs Node) Node {
 			iterator = append(iterator, tryEval(n))
 		}
 	default:
+		if v, ok := valueNodeOf(list); ok {
+			iterator = []Node{tryEval(v)}
+			break
+		}
 		if s, ok := stringValue(list); ok && s != "" {
 			if _, isQuoted := list.(*Quoted); !isQuoted {
 				iterator = []Node{newValue([]Node{newAnonymous(s, 0, nil, false, false, nil)}, 0)}

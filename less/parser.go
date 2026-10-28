@@ -1019,6 +1019,9 @@ func (p *parser) mixinArgs(isCall bool) ([]mixinArg, bool) {
 	semi, containsNamed, variadic := false, false, false
 	name := ""
 	hasSep := true
+	// expand is declared once for the whole list, as in the original: after a `...` expansion every later
+	// argument of the call is expanded too
+	expand := false
 	p.in.save()
 	for {
 		var arg Node
@@ -1059,7 +1062,6 @@ func (p *parser) mixinArgs(isCall bool) ([]mixinArg, bool) {
 			break
 		}
 		nameLoop := ""
-		expand := false
 		if e, ok := arg.(*Expression); ok {
 			e.throwAwayComments()
 		}

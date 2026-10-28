@@ -114,22 +114,26 @@ func fnSvgGradient(fc *funcCaller, args []Node) Node {
 	renderEnv := &evalContext{}
 	directionValue := toCSS(direction, renderEnv)
 	var stops []Node
+	// stringStops is a string `value`: its characters are the stops, and the first is not a colour
+	stringStops := false
 	switch {
 	case len(args) == 2:
-		list, ok := arrayValue(args[1])
-		if !ok {
-			if s, isStr := stringValue(args[1]); isStr {
-				if js.Len16(s) < 2 {
-					svgArgumentError()
-				}
-				typeError("Cannot read properties of undefined (reading 'value')")
+		if list, ok := arrayValue(args[1]); ok {
+			if len(list) < 2 {
+				svgArgumentError()
 			}
-			svgArgumentError()
+			stops = list
+		} else if s, isStr := stringValue(args[1]); isStr {
+			if js.Len16(s) < 2 {
+				svgArgumentError()
+			}
+			stringStops = true
+		} else if _, isNode := valueNodeOf(args[1]); !isNode {
+			if _, isDim := args[1].(*Dimension); !isDim {
+				readUndefined("length")
+			}
 		}
-		if len(list) < 2 {
-			svgArgumentError()
-		}
-		stops = list
+		// a number or a node has no length: there are no stops
 	case len(args) < 3:
 		svgArgumentError()
 	default:
@@ -156,6 +160,9 @@ func fnSvgGradient(fc *funcCaller, args []Node) Node {
 	}
 	var b strings.Builder
 	b.WriteString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><` + gradientType + `Gradient id="g" ` + dir + `>`)
+	if stringStops {
+		svgArgumentError()
+	}
 	for i, stop := range stops {
 		var color, position Node
 		if e, ok := stop.(*Expression); ok {

@@ -46,9 +46,8 @@ func toError(r any, files fileContents) *Error {
 	if !ok {
 		panic(r)
 	}
-	if e.isLess {
-		return &Error{info: e}
-	}
+	// parse-tree.js wraps every evaluation and output error in a new LessError, which recomputes the position
+	// from the index and file that the nodes attached on the way up
 	return &Error{info: newLessError(e, files, "")}
 }
 

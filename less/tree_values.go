@@ -82,13 +82,15 @@ func (a *Anonymous) genCSS(ctx *evalContext, out *output) {
 	visible := a.value != "" || a.valueNode != nil
 	a.nodeVisible = &visible
 	if visible {
-		s := a.value
+		if a.valueNode == nil {
+			out.addAt(a.value, a.fileInfo, a.index, a.mapLines)
+			return
+		}
+		s := "[object Object]"
 		if u, ok := a.valueNode.(*Unit); ok {
 			s = u.String()
-		} else if a.valueNode != nil {
-			s = "[object Object]"
 		}
-		out.addAt(s, a.fileInfo, a.index, a.mapLines)
+		out.addObject(s, a.fileInfo, a.index, a.mapLines)
 	}
 }
 
@@ -159,7 +161,7 @@ func debugAsMediaQuery(info *debugInfo) string {
 		}
 		return "\\" + a
 	})
-	return "@media -sass-debug-info{filename{font-family:" + escaped + "}}line{font-family:\\00003" + itoa(info.lineNumber) + "}}\n"
+	return "@media -sass-debug-info{filename{font-family:" + escaped + "}line{font-family:\\00003" + itoa(info.lineNumber) + "}}\n"
 }
 
 // UnicodeDescriptor is tree/unicode-descriptor.js.

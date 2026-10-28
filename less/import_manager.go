@@ -8,7 +8,8 @@ import (
 	"github.com/less/less.js/internal/jsre"
 )
 
-// importManager is lib/less/import-manager.js. Loads are queued and complete in request order when drained.
+// importManager is lib/less/import-manager.js. Each load is a chain of queued file system operations that
+// completes when its last operation is drained.
 type importManager struct {
 	contents             map[string]string
 	contentsOrder        []string // keys of contents in insertion order, like a JavaScript object's
@@ -48,6 +49,19 @@ func (m *importManager) contentsOf(filename string) (string, bool) {
 // importCallback receives the error, the parsed root (or the text of an inline import), whether the file is the
 // root file, and the resolved path.
 type importCallback func(e *errorInfo, root Node, text *string, atRoot bool, fullPath string)
+
+// after runs fn once n more file system operations have completed. The original reads files asynchronously,
+// so a load finishes after its own open, stat, read and close requests; requests complete in the order they
+// were made, which decides the order the loaded files are recorded in (the dependency list of -M).
+func (m *importManager) after(n int, fn func()) {
+	m.pending = append(m.pending, func() {
+		if n > 1 {
+			m.after(n-1, fn)
+			return
+		}
+		fn()
+	})
+}
 
 func (m *importManager) drain() {
 	for len(m.pending) > 0 {
@@ -90,12 +104,12 @@ func (m *importManager) push(path string, tryAppend bool, current *FileInfo, opt
 			ext = ".js"
 		}
 	}
-	m.pending = append(m.pending, func() {
-		lo := loadOptions{paths: m.context.paths, ext: ext}
-		if opts.isPlugin && !isExplicitPlugin(path) {
-			lo.prefixes = []string{"less-plugin-", ""}
-		}
-		f, err := loadFileWith(path, current.CurrentDirectory, lo)
+	lo := loadOptions{paths: m.context.paths, ext: ext}
+	if opts.isPlugin && !isExplicitPlugin(path) {
+		lo.prefixes = []string{"less-plugin-", ""}
+	}
+	f, err, ops := loadFileOps(path, current.CurrentDirectory, lo)
+	m.after(ops, func() {
 		if err != nil {
 			parsed(err, nil, nil, "", false)
 			return

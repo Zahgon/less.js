@@ -1,8 +1,10 @@
 package less
 
 import (
+	"errors"
 	"os"
 	"strings"
+	"syscall"
 
 	"github.com/less/less.js/internal/js"
 )
@@ -56,6 +58,22 @@ func requireResolve(id string) (string, bool) {
 // loadFileWith is FileManager.loadFile: it tries every search path with every prefix, records each attempt, and
 // fails with the list of names it tried.
 func loadFileWith(filename, currentDirectory string, o loadOptions) (*loadedFile, *errorInfo) {
+	f, err, _ := loadFileOps(filename, currentDirectory, o)
+	return f, err
+}
+
+// readFileOps is the number of asynchronous requests Node's fs.readFile makes: a failed open is one; a file is
+// opened, stat-ed, read in 512 KiB pieces (an empty file or a directory takes one read) and closed.
+func readFileOps(size int, opened bool) int {
+	if !opened {
+		return 1
+	}
+	return 3 + max(1, (size+524287)/524288)
+}
+
+// loadFileOps is loadFileWith that also counts the file system requests the load makes.
+func loadFileOps(filename, currentDirectory string, o loadOptions) (*loadedFile, *errorInfo, int) {
+	ops := 0
 	absolute := isPathAbsoluteFM(filename)
 	prefix := js.Slice16(filename, 0, 1)
 	explicit := prefix == "." || prefix == "/"
@@ -116,6 +134,7 @@ func loadFileWith(filename, currentDirectory string, o loadOptions) (*loadedFile
 			}
 			data, err := os.ReadFile(full)
 			if err != nil {
+				ops += readFileOps(0, errors.Is(err, syscall.EISDIR))
 				if isNodeModule {
 					tried = append(tried, "npm://"+full)
 				} else {
@@ -123,13 +142,14 @@ func loadFileWith(filename, currentDirectory string, o loadOptions) (*loadedFile
 				}
 				continue
 			}
+			ops += readFileOps(len(data), true)
 			if o.rawBuffer {
-				return &loadedFile{raw: data, filename: full}, nil
+				return &loadedFile{raw: data, filename: full}, nil, ops
 			}
-			return &loadedFile{contents: js.DecodeUTF8(data), filename: full}, nil
+			return &loadedFile{contents: js.DecodeUTF8(data), filename: full}, nil, ops
 		}
 	}
-	return nil, &errorInfo{Type: "File", Message: "'" + filename + "' wasn't found. Tried - " + strings.Join(tried, ",")}
+	return nil, &errorInfo{Type: "File", Message: "'" + filename + "' wasn't found. Tried - " + strings.Join(tried, ",")}, ops
 }
 
 // loadFile loads a stylesheet as text.

@@ -63,3 +63,29 @@ func failStringValueAs(n Node, variable, method string) {
 	}
 	typeError("Cannot read properties of undefined (reading '" + method + "')")
 }
+
+// valueNodeOf returns a node's `value` property when it holds another node.
+func valueNodeOf(n Node) (Node, bool) {
+	var v Node
+	switch t := n.(type) {
+	case *URL:
+		v = t.value
+	case *Paren:
+		v = t.value
+	case *Negative:
+		v = t.value
+	case *Assignment:
+		v = t.value
+	case *Attribute:
+		v = t.value
+	case *Declaration:
+		v = t.value
+	case *Element:
+		v = t.value
+	case *NamespaceValue:
+		v = t.value
+	case *Anonymous:
+		v = t.valueNode
+	}
+	return v, v != nil
+}

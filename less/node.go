@@ -291,6 +291,15 @@ func (o *output) addAt(chunk string, fi *FileInfo, index int, mapLines bool) {
 	o.strs = append(o.strs, chunk)
 }
 
+// addObject adds a chunk that is an object rather than a string: joined output prints its toString, while the
+// source map output fails on it the way chunk.split fails on a non-string.
+func (o *output) addObject(text string, fi *FileInfo, index int, mapLines bool) {
+	if o.hook != nil {
+		typeError("chunk.split is not a function")
+	}
+	o.strs = append(o.strs, text)
+}
+
 func (o *output) isEmpty() bool {
 	if o.empty != nil {
 		return o.empty()
