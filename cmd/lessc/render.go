@@ -72,7 +72,7 @@ func (c *lessc) writeFile(name, contents string) bool {
 	if err := ensureDirectory(name); err != nil {
 		c.crash("Error: " + err.Error())
 	}
-	if err := os.WriteFile(name, []byte(contents), 0o666); err != nil {
+	if err := os.WriteFile(name, []byte(js.ToUTF8(contents)), 0o666); err != nil {
 		code, msg := nodeError(err)
 		c.fail("lessc: failed to create file "+name, "Error: "+code+" "+msg)
 		return false
@@ -158,7 +158,7 @@ func (c *lessc) render() {
 	}
 	if input == "" {
 		c.fail("lessc: no input files", "")
-		io.WriteString(c.stdout, usage())
+		c.write(c.stdout, usage())
 		return
 	}
 	if o.Depends {
@@ -166,7 +166,7 @@ func (c *lessc) render() {
 			c.fail("option --depends requires an output path to be specified")
 			return
 		}
-		io.WriteString(c.stdout, outputbase+": ")
+		c.write(c.stdout, outputbase+": ")
 	}
 	data, ok := c.readInput(input)
 	if !ok {
@@ -219,7 +219,7 @@ func (c *lessc) writeResult(output string, result *less.Result) {
 		}
 		less.LogInfo("lessc: wrote " + output)
 	default:
-		io.WriteString(c.stdout, result.CSS)
+		c.write(c.stdout, result.CSS)
 	}
 	if o.SourceMap != nil && !c.sourceMapFileInline {
 		if name := c.sourceMapOptions.SourceMapFullFilename; c.writeFile(name, result.Map) {

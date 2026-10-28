@@ -328,3 +328,18 @@ func Len16(s string) int {
 	}
 	return n
 }
+
+// ToUTF8 returns the bytes Node writes for a string in UTF-8: every lone surrogate becomes U+FFFD.
+func ToUTF8(s string) string {
+	if strings.IndexByte(s, 0xED) < 0 || !HasLoneSurrogate(s) {
+		return s
+	}
+	var b strings.Builder
+	for _, cp := range decodeWTF8(s) {
+		if cp >= 0xD800 && cp <= 0xDFFF {
+			cp = utf8.RuneError
+		}
+		b.WriteRune(cp)
+	}
+	return b.String()
+}

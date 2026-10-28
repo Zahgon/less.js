@@ -70,7 +70,10 @@ func main() {
 	os.Exit(c.run(os.Args[1:]))
 }
 
-func (c *lessc) println(w io.Writer, s string) { io.WriteString(w, s+"\n") }
+// write writes text the way Node writes a JavaScript string to a stream: as UTF-8 with lone surrogates replaced.
+func (c *lessc) write(w io.Writer, s string) { io.WriteString(w, js.ToUTF8(s)) }
+
+func (c *lessc) println(w io.Writer, s string) { c.write(w, s+"\n") }
 
 func (c *lessc) fail(lines ...string) {
 	for _, l := range lines {
@@ -123,7 +126,7 @@ func setVariable(vars []less.VarOption, option string) []less.VarOption {
 }
 
 func (c *lessc) printUsage() {
-	io.WriteString(c.stdout, usage())
+	c.write(c.stdout, usage())
 	c.continueProcessing = false
 }
 
