@@ -25,8 +25,8 @@ application/emma+xml emma
 application/epub+zip epub
 application/exi exi
 application/font-tdpfr pfr
-application/font-woff 
-application/font-woff2 
+application/font-woff
+application/font-woff2
 application/geo+json geojson
 application/gml+xml gml
 application/gpx+xml gpx
@@ -492,13 +492,13 @@ application/wspolicy+xml wspolicy
 application/x-7z-compressed 7z
 application/x-abiword abw
 application/x-ace-compressed ace
-application/x-apple-diskimage 
+application/x-apple-diskimage
 application/x-arj arj
 application/x-authorware-bin aab x32 u32 vox
 application/x-authorware-map aam
 application/x-authorware-seg aas
 application/x-bcpio bcpio
-application/x-bdoc 
+application/x-bdoc
 application/x-bittorrent torrent
 application/x-blorb blb blorb
 application/x-bzip bz
@@ -539,7 +539,7 @@ application/x-gtar gtar
 application/x-hdf hdf
 application/x-httpd-php php
 application/x-install-instructions install
-application/x-iso9660-image 
+application/x-iso9660-image
 application/x-java-archive-diff jardiff
 application/x-java-jnlp-file jnlp
 application/x-latex latex
@@ -557,7 +557,7 @@ application/x-msaccess mdb
 application/x-msbinder obd
 application/x-mscardfile crd
 application/x-msclip clp
-application/x-msdos-program 
+application/x-msdos-program
 application/x-msdownload com bat
 application/x-msmediaview mvb m13 m14
 application/x-msmetafile wmf emf emz
@@ -570,7 +570,7 @@ application/x-netcdf nc cdf
 application/x-ns-proxy-autoconfig pac
 application/x-nzb nzb
 application/x-perl pl pm
-application/x-pilot 
+application/x-pilot
 application/x-pkcs12 p12 pfx
 application/x-pkcs7-certificates p7b spc
 application/x-pkcs7-certreqresp p7r
@@ -627,11 +627,11 @@ application/xv+xml mxml xhvml xvml xvm
 application/yang yang
 application/yin+xml yin
 application/zip zip
-audio/3gpp 
+audio/3gpp
 audio/adpcm adp
 audio/basic au snd
 audio/midi mid midi kar rmi
-audio/mp3 
+audio/mp3
 audio/mp4 m4a mp4a
 audio/mpeg mpga mp2 mp2a mp3 m2a m3a
 audio/ogg oga ogg spx
@@ -649,21 +649,21 @@ audio/vnd.nuera.ecelp7470 ecelp7470
 audio/vnd.nuera.ecelp9600 ecelp9600
 audio/vnd.rip rip
 audio/wav wav
-audio/wave 
+audio/wave
 audio/webm weba
 audio/x-aac aac
 audio/x-aiff aif aiff aifc
 audio/x-caf caf
 audio/x-flac flac
-audio/x-m4a 
+audio/x-m4a
 audio/x-matroska mka
 audio/x-mpegurl m3u
 audio/x-ms-wax wax
 audio/x-ms-wma wma
 audio/x-pn-realaudio ram ra
 audio/x-pn-realaudio-plugin rmp
-audio/x-realaudio 
-audio/x-wav 
+audio/x-realaudio
+audio/x-wav
 audio/xm xm
 chemical/x-cdx cdx
 chemical/x-cif cif
@@ -695,7 +695,7 @@ image/tiff tiff tif
 image/vnd.adobe.photoshop psd
 image/vnd.dece.graphic uvi uvvi uvg uvvg
 image/vnd.djvu djvu djv
-image/vnd.dvb.subtitle 
+image/vnd.dvb.subtitle
 image/vnd.dwg dwg
 image/vnd.dxf dxf
 image/vnd.fastbidsheet fbs
@@ -716,7 +716,7 @@ image/x-freehand fh fhc fh4 fh5 fh7
 image/x-icon ico
 image/x-jng jng
 image/x-mrsid-image sid
-image/x-ms-bmp 
+image/x-ms-bmp
 image/x-pcx pcx
 image/x-pict pic pct
 image/x-portable-anymap pnm
@@ -759,7 +759,7 @@ text/n3 n3
 text/plain txt text conf def list log in ini
 text/prs.lines.tag dsc
 text/richtext rtx
-text/rtf 
+text/rtf
 text/sgml sgml sgm
 text/slim slim slm
 text/stylus stylus styl
@@ -792,7 +792,7 @@ text/x-lua lua
 text/x-markdown mkd
 text/x-nfo nfo
 text/x-opml opml
-text/x-org 
+text/x-org
 text/x-pascal p pas
 text/x-processing pde
 text/x-sass sass
@@ -803,7 +803,7 @@ text/x-suse-ymp ymp
 text/x-uuencode uu
 text/x-vcalendar vcs
 text/x-vcard vcf
-text/xml 
+text/xml
 text/yaml yaml yml
 video/3gpp 3gp 3gpp
 video/3gpp2 3g2
