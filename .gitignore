@@ -8,18 +8,20 @@
 *.sublime-*
 .DS_Store
 
-# npm
-node_modules
-!package-lock.json
-npm-debug.log
+# Go
+/lessc
+/lessc-build
+*.test
+*.out
 
 # Coverage
-.nyc_output
 coverage
-*.lcov
+*.coverprofile
 
 # Build output
 dist
+packages/less/test/sourcemaps/**/*.map
+packages/less/test/sourcemaps/*.css
 
 # Claude Code
 .claude/

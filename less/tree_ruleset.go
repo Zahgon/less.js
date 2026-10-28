@@ -496,6 +496,10 @@ func (r *Ruleset) genCSS(ctx *evalContext, out *output) {
 		if ctx.compress {
 			sep = ","
 		}
+		if r.paths == nil {
+			// a ruleset the selector visitors never reached has no paths to print
+			readUndefined("length")
+		}
 		for i, path := range r.paths {
 			if len(path) == 0 {
 				continue

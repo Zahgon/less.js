@@ -2,8 +2,6 @@
 
 <p align="center">
     <a href="https://github.com/less/less.js/actions?query=branch%3Amaster"><img src="https://github.com/less/less.js/actions/workflows/ci.yml/badge.svg?branch=master" alt="Github Actions CI"/></a>
-    <a href="https://www.npmtrends.com/less"><img src="https://img.shields.io/npm/dm/less.svg?sanitize=true" alt="Downloads"></a>
-    <a href="https://www.npmjs.com/package/less"><img src="https://img.shields.io/npm/v/less.svg?sanitize=true" alt="npm version" /></a>
 </p>
 
 # Less.js
@@ -26,32 +24,31 @@ Less extends CSS with variables, mixins, functions, nesting, and more — then c
 ## Install
 
 ```sh
-npm install less
+go install github.com/less/less.js/cmd/lessc@latest
 ```
 
 ## Usage
 
-### Node.js
+### Go
 
-```js
-import less from 'less';
+```go
+import "github.com/less/less.js/less"
 
-const output = await less.render('.class { width: (1 + 1) }');
-console.log(output.css);
+res, err := less.Render(".class { width: (1 + 1) }", less.DefaultOptions())
+if err != nil {
+	log.Fatal(err.Format(false))
+}
+fmt.Print(res.CSS)
 ```
 
 ### Command Line
 
 ```sh
-npx lessc styles.less styles.css
+lessc styles.less styles.css
 ```
 
-### Browser
-
-```html
-<link rel="stylesheet/less" type="text/css" href="styles.less" />
-<script src="https://cdn.jsdelivr.net/npm/less"></script>
-```
+This directory keeps the source map expectations of the test suite (`test/sourcemaps*`); the Go code is at the
+repository root.
 
 ## Why Less?
 
@@ -70,7 +67,7 @@ Full documentation, usage guides, and configuration options at **[lesscss.org](h
 
 Less.js is open source. [Report bugs](https://github.com/less/less.js/issues), submit pull requests, or help improve the [documentation](https://github.com/less/less-docs).
 
-See [CONTRIBUTING.md](https://github.com/less/less.js/blob/master/CONTRIBUTING.md) for development setup.
+See [CONTRIBUTING.md](https://github.com/less/less.js/blob/master/CONTRIBUTING.md) for development setup (Go 1.23 or newer, `go test ./...`).
 
 ## License
 

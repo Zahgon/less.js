@@ -33,6 +33,11 @@ func (v *Visitor) visitAny(n Node) any {
 	if n == nil {
 		return nil
 	}
+	if l, ok := n.(*nodeList); ok {
+		// an array left in a rule list (an import evaluated where imports are not spliced in) has no node type:
+		// it is returned unvisited, and a replacing visitor flattens it into the list
+		return l.nodes
+	}
 	args := sharedVisitArgs
 	args.visitDeeper = true
 	var node any = n

@@ -42,116 +42,47 @@ Pull requests are welcome! Here's how to make them go smoothly:
 
 * **For new features, start with a feature request** to get feedback and see how your idea is received.
 * **If your PR solves an existing issue**, but approaches it differently, please create a new issue first and discuss it with core contributors. This helps avoid wasted effort.
-* The `dist/` folder is gitignored—builds happen automatically during releases.
-* **Please add tests** for your work. Run tests using `pnpm test`, which runs both Node.js and browser (Headless Chrome) tests.
+* The `dist/` folder is gitignored—release builds of `lessc` happen automatically when a version tag is pushed.
+* **Please add tests** for your work. Run them with `go test ./...`, which compiles every fixture of `packages/test-data` and checks the source maps, errors and warnings.
 
 ### Coding Standards
 
-* Always use spaces, never tabs
-* End lines with semicolons
-* Aim for ESLint standards
+* Format with `gofmt` (CI fails on any file `gofmt -l .` lists)
+* Keep `go vet ./...` clean
+* Use the Go standard library only: the module has no requirements
+* Return errors as values at the library and command boundary, and document exported names
 
 ## Developing
 
 If you want to work on an issue, add a comment saying you're taking it on—this helps prevent duplicate work.
 
-Learn more about [developing Less.js](http://lesscss.org/usage/#developing-less).
+You need Go 1.23 or newer and nothing else:
+
+```sh
+go build -o lessc ./cmd/lessc     # build the command
+go vet ./...                      # static checks
+go test ./...                     # the fixture suite and the unit tests
+gofmt -l .                        # lists any file that needs formatting
+```
+
+The compiler lives in `less/`, the command in `cmd/lessc`, and the JavaScript semantics the output depends on in
+`internal/`. Fixtures and their expected output are in `packages/test-data`; each folder's options are in its
+`styles.config.json`. See [.github/TESTING_PUBLISHING.md](.github/TESTING_PUBLISHING.md) for the test layout.
+
+Learn more about the language at [lesscss.org](http://lesscss.org).
 
 ## Releases
 
-Releases are fully automated! Here's how it works:
+A release is a version tag. Pushing `vX.Y.Z` (or `vX.Y.Z-alpha.N` for a pre-release) runs
+`.github/workflows/release.yml`, which formats, vets and tests the module, builds `lessc` for Linux, macOS and
+Windows on amd64 and arm64, and creates the GitHub release with the binaries and their `SHA256SUMS`.
 
-### Automated Publishing
+1. Update `CHANGELOG.md` and the version `lessc --version` prints (`cmd/lessc/main.go`).
+2. Merge into `master` (or `alpha` for a pre-release).
+3. Tag the merge commit and push the tag: `git tag v4.9.2 && git push origin v4.9.2`.
 
-When code is pushed to specific branches, GitHub Actions automatically:
-
-1. **Runs tests and builds** the project
-2. **Bumps the version** automatically
-3. **Publishes to npm** with the appropriate tag
-4. **Creates a GitHub release**
-
-### Release Branches
-
-- **`master` branch**: 
-  - Publishes regular releases (e.g., `4.4.2` → `4.4.3`)
-  - Published to npm with `latest` tag
-  - Creates regular GitHub releases
-  - Version auto-increments by patch unless explicitly set
-
-- **`alpha` branch**:
-  - Publishes alpha releases (e.g., `5.0.0-alpha.1` → `5.0.0-alpha.2`)
-  - Published to npm with `alpha` tag
-  - Creates GitHub pre-releases
-  - Version auto-increments alpha suffix
-
-### How to Publish
-
-**For patch releases (automatic):**
-1. Merge your PR into `master`
-2. The workflow compares `package.json` against the latest npm version
-3. If `package.json` is ahead, it uses that version; otherwise it bumps to the next patch
-4. Publishes to npm and creates a GitHub release with `less.js` and `less.min.js` attached
-
-**For minor/major releases:**
-1. Create a release branch (e.g., `release/v4.7.0`)
-2. Update `version` in all `package.json` files and update `CHANGELOG.md`
-3. Merge into `master`
-4. The workflow detects the version is ahead of npm and publishes it directly
-
-**For alpha releases:**
-1. Make your changes on the `alpha` branch
-2. Commit and push
-3. The workflow automatically increments the alpha version and publishes
-
-### Version Override
-
-To force a specific version (useful for CI or manual runs), set the `EXPLICIT_VERSION` environment variable:
-
-```bash
-EXPLICIT_VERSION=4.7.0 pnpm run publish
-```
-
-### Release Assets
-
-Each GitHub release automatically includes:
-- `less.js` — the full browser build
-- `less.min.js` — the minified browser build
-
-These are built during the workflow and attached to the release. They are not committed to git (the `dist/` directory is gitignored).
-
-### Security
-
-We use npm's [trusted publishing](https://docs.npmjs.com/trusted-publishers) with OIDC authentication. This means:
-- No long-lived tokens needed
-- Automatic provenance generation
-- Enhanced security through short-lived, workflow-specific credentials
-
-The publishing workflow (`.github/workflows/publish.yml`) handles both release types automatically.
-
-### Important Notes
-
-- Publishing only works from `master` or `alpha` branches
-- Alpha versions must contain `-alpha.` and are published to the `alpha` tag
-- Regular versions are published to the `latest` tag
-- Alpha branch must be up-to-date with master before publishing
-- Alpha base version must be >= master version (semver)
-
-### Merging Master into Alpha
-
-When merging `master` into `alpha`, the version in `package.json` might be overwritten. We have two layers of protection:
-
-1. **Post-merge git hook** (automatic): Automatically restores alpha versions after merges
-   - Installed automatically via husky when you run `pnpm install`
-   - Runs automatically after `git merge`
-   - Restores and increments the alpha version if it was overwritten
-   - Prompts you to commit the restored version
-
-2. **Publishing script detection** (safety net): The publishing script also detects overwritten versions
-   - Searches git history for the last alpha version
-   - Restores and increments it (e.g., if it was `5.0.0-alpha.3`, it becomes `5.0.0-alpha.4`)
-   - Updates all package.json files accordingly
-
-**Note**: The git hook is managed by husky and installs automatically. The publishing script protection works as a backup even if the hook isn't installed.
+Go users get the release with `go install github.com/less/less.js/cmd/lessc@v4.9.2`; the module proxy needs no
+publishing step.
 
 ---
 

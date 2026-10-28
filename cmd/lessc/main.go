@@ -114,6 +114,10 @@ func setVariable(vars []less.VarOption, option string) []less.VarOption {
 		value = &v
 	}
 	if name == "__proto__" {
+		// the object exists even though the assignment is ignored
+		if vars == nil {
+			vars = []less.VarOption{}
+		}
 		return vars
 	}
 	for i := range vars {

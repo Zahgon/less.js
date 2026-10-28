@@ -1,0 +1,9 @@
+{
+  "language": {
+    "less": {
+      "sourceMap": {
+        "outputSourceFiles": true
+      }
+    }
+  }
+}

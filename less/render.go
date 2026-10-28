@@ -18,6 +18,9 @@ type Error struct{ info *errorInfo }
 
 func (e *Error) Error() string { return e.info.String(nil) }
 
+// Filename is the file the error was raised in, or "" when it has none.
+func (e *Error) Filename() string { return e.info.Filename }
+
 // Format returns the message lessc prints.
 func (e *Error) Format(color bool) string {
 	if color {
@@ -77,7 +80,10 @@ func Render(input string, opts *Options) (res *Result, rerr *Error) {
 	if root == nil {
 		return nil, &Error{info: perr}
 	}
-	verr := newImportVisitor(imports).run(root)
+	var verr *errorInfo
+	if !opts.NoProcessImports {
+		verr = newImportVisitor(imports).run(root)
+	}
 	e := perr
 	if e == nil {
 		e = verr

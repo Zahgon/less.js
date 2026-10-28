@@ -1,0 +1,9 @@
+{
+  "language": {
+    "less": {
+      "paths": [
+        "../../data/"
+      ]
+    }
+  }
+}

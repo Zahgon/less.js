@@ -55,8 +55,10 @@ type Options struct {
 	RewriteUrls       int
 	Math              int
 	StrictUnits       bool
-	GlobalVars        []VarOption
+	GlobalVars        []VarOption // nil when absent; empty but present still adds the preamble's newline
 	ModifyVars        []VarOption
+	Banner            string // text placed before the stylesheet (the library's banner option)
+	NoProcessImports  bool   // processImports: false; imports stay as written and are not loaded
 	URLArgs           string
 	JavascriptEnabled bool
 	DumpLineNumbers   string

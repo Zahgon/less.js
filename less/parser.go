@@ -366,16 +366,20 @@ func (p *parser) parse(str string, additional *Options) (root *Ruleset, err *err
 	if additional != nil && additional.DisablePluginRule {
 		p.disablePlugin = true
 	}
-	globalVars, modifyVars := "", ""
-	if additional != nil && len(additional.GlobalVars) > 0 {
+	// a variables object that is present but empty still adds its newline, as the original's template does
+	globalVars, modifyVars, banner := "", "", ""
+	if additional != nil && additional.GlobalVars != nil {
 		globalVars = serializeVars(additional.GlobalVars) + "\n"
 	}
-	if additional != nil && len(additional.ModifyVars) > 0 {
+	if additional != nil && additional.ModifyVars != nil {
 		modifyVars = "\n" + serializeVars(additional.ModifyVars)
 	}
+	if additional != nil {
+		banner = additional.Banner
+	}
 	preText := ""
-	if globalVars != "" {
-		preText = globalVars
+	if globalVars != "" || banner != "" {
+		preText = banner + globalVars
 		p.imports.contentsIgnoredChars[p.fileInfo.Filename] += js.Len16(preText)
 	}
 	str = strings.ReplaceAll(strings.ReplaceAll(str, "\r\n", "\n"), "\r", "\n")

@@ -2,25 +2,52 @@
 
 <p align="center">
     <a href="https://github.com/less/less.js/actions?query=branch%3Amaster"><img src="https://github.com/less/less.js/actions/workflows/ci.yml/badge.svg?branch=master" alt="Github Actions CI"/></a>
-    <a href="https://www.npmtrends.com/less"><img src="https://img.shields.io/npm/dm/less.svg?sanitize=true" alt="Downloads"></a>
-    <a href="https://www.npmjs.com/package/less"><img src="https://img.shields.io/npm/v/less.svg?sanitize=true" /></a>
     <a href="https://twitter.com/lesstocss"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/lesstocss.svg?style=flat-square" style="max-width:100%;" /></a>
 </p>
 
-This is the Less.js monorepo.
+This is Less, the CSS preprocessor, as a Go module: the `lessc` command and the compiler library behind it. It
+compiles Less 4.9.1 stylesheets exactly as the JavaScript implementation did, with the same options, messages,
+output files and exit status, and it needs nothing beyond the Go standard library.
+
+## Installing and running
+
+```sh
+go install github.com/less/less.js/cmd/lessc@latest   # or: go build -o lessc ./cmd/lessc
+lessc styles.less styles.css                          # compile to a file
+lessc -x --source-map styles.less out/styles.css      # compressed, with out/styles.css.map
+lessc - < styles.less                                 # read the stylesheet from standard input
+lessc --help                                          # every option
+```
+
+The library is the `less` package:
+
+```go
+opts := less.DefaultOptions()
+opts.Filename = "styles.less"
+res, err := less.Render(source, opts)
+if err != nil {
+	fmt.Fprintln(os.Stderr, err.Format(false))
+	return
+}
+fmt.Print(res.CSS)
+```
+
+Inline JavaScript (backtick expressions under `--js`) and JavaScript plugins cannot run in Go: a stylesheet that
+uses them reports an error, and `@import` over `http` and `https` is not fetched.
 
 ## More information
 
 For general information on the language, configuration options or usage visit [lesscss.org](http://lesscss.org).
 
-Here are other resources for using Less.js:
+Here are other resources for using Less:
 
 * [stackoverflow.com][so] is a great place to get answers about Less.
 * [Less.js Issues][issues] for reporting bugs
 
 
 ## Contributing
-Please read [CONTRIBUTING.md](CONTRIBUTING.md). Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com).
+Please read [CONTRIBUTING.md](CONTRIBUTING.md). Add tests for any new or changed functionality. Format, vet and test
+your code with the Go toolchain: `gofmt -l .`, `go vet ./...` and `go test ./...`.
 
 ### Reporting Issues
 
@@ -30,7 +57,15 @@ Please report documentation issues in [the documentation project](https://github
 
 ### Development
 
-Read [Developing Less](http://lesscss.org/usage/#developing-less).
+The command is in `cmd/lessc`, the compiler in `less/` (parser, tree nodes, visitors, built-in functions, source
+maps), and the JavaScript runtime semantics the output depends on (number printing, UTF-16 strings, regular
+expressions, URI and JSON encoding) in `internal/`. The shared fixtures are in `packages/test-data`; see
+[.github/TESTING_PUBLISHING.md](.github/TESTING_PUBLISHING.md).
+
+## Authors and licence
+
+Less was created by Alexis Sellier (<self@cloudhead.net>) and is maintained by the Core Less Team. It is licensed
+under the Apache License 2.0; see [LICENSE](LICENSE).
 
 ## Release History
 See the [changelog](CHANGELOG.md)
