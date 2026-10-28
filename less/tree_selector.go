@@ -23,6 +23,7 @@ func newCombinator(v string) *Combinator {
 	return c
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *Combinator) Type() string { return "Combinator" }
 
 func (c *Combinator) cmpValue() any { return c.value }
@@ -64,6 +65,7 @@ func newElementVis(c *Combinator, n Node, s string, isVariable bool, index int, 
 	return e
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (e *Element) Type() string { return "Element" }
 
 func (e *Element) cmpValue() any {
@@ -142,6 +144,7 @@ func newSelector(elements []Node, extendList []Node, condition Node, index int, 
 	return s
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (s *Selector) Type() string { return "Selector" }
 
 func (s *Selector) cmpValue() any { return nil }

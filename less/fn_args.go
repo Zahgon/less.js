@@ -130,6 +130,7 @@ type jsNumber struct {
 	v float64
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (n *jsNumber) Type() string { return "" }
 
 func num(v float64) Node { return &jsNumber{v: v} }

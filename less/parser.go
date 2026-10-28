@@ -308,6 +308,7 @@ type selectorList struct {
 	list []*Selector
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (s *selectorList) Type() string { return "SelectorList" }
 
 // nodeOrNil converts a possibly nil node pointer to a Node, keeping nil as a nil interface.

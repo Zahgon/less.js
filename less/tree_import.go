@@ -42,6 +42,7 @@ func newImportVis(path, features Node, opts *importOptions, index int, fi *FileI
 	return im
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (im *Import) Type() string { return "Import" }
 
 func (im *Import) accept(v visitor) {

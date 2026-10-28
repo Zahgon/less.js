@@ -16,6 +16,7 @@ type Result struct {
 // when color is true.
 type Error struct{ info *errorInfo }
 
+// Error returns the error formatted without colours, as LessError.toString does.
 func (e *Error) Error() string { return e.info.String(nil) }
 
 // Filename is the file the error was raised in, or "" when it has none.

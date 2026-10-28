@@ -29,6 +29,7 @@ type errorInfo struct {
 	Extract     [3]*string
 }
 
+// Error returns the error message.
 func (e *errorInfo) Error() string { return e.Message }
 
 // hasLineColumn is e.hasOwnProperty('line') && e.hasOwnProperty('column').

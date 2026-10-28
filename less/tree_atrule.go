@@ -86,6 +86,7 @@ func declarationsBlock(rules []Node, mergeable bool) bool {
 	return true
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (a *AtRule) Type() string { return "AtRule" }
 
 func (a *AtRule) accept(v visitor) {
@@ -272,6 +273,7 @@ func newContainer(value, features []Node, index int, fi *FileInfo, vis *visibili
 	return newMediaKind(true, value, features, index, fi, vis)
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (m *Media) Type() string {
 	if m.container {
 		return "Container"

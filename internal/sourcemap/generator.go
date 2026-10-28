@@ -50,6 +50,7 @@ func NewGenerator(file *string) *Generator {
 // InvalidMappingError is the Error addMapping throws for a mapping it rejects.
 type InvalidMappingError struct{ Message string }
 
+// Error returns the message of the rejected mapping.
 func (e *InvalidMappingError) Error() string { return e.Message }
 
 // AddMapping is SourceMapGenerator.prototype.addMapping, including its validation.

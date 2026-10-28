@@ -13,6 +13,7 @@ type Keyword struct {
 
 func newKeyword(v string) *Keyword { return &Keyword{value: v} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (k *Keyword) Type() string { return "Keyword" }
 
 func (k *Keyword) cmpValue() any { return k.value }
@@ -47,6 +48,7 @@ func newAnonymous(value string, index int, fi *FileInfo, mapLines, rulesetLike b
 	return a
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (a *Anonymous) Type() string { return "Anonymous" }
 
 func (a *Anonymous) cmpValue() any {
@@ -109,6 +111,7 @@ func newComment(value string, isLineComment bool, index int, fi *FileInfo) *Comm
 	return c
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *Comment) Type() string { return "Comment" }
 
 func (c *Comment) cmpValue() any { return c.value }
@@ -172,6 +175,7 @@ type UnicodeDescriptor struct {
 
 func newUnicodeDescriptor(v string) *UnicodeDescriptor { return &UnicodeDescriptor{value: v} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (u *UnicodeDescriptor) Type() string { return "UnicodeDescriptor" }
 
 func (u *UnicodeDescriptor) cmpValue() any { return u.value }
@@ -186,6 +190,7 @@ type Value struct {
 
 func newValue(v []Node, _ int) *Value { return &Value{value: v} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (v *Value) Type() string { return "Value" }
 
 func (v *Value) cmpValue() any { return v.value }
@@ -239,6 +244,7 @@ func newQuoted(str, content string, escaped bool, index int, fi *FileInfo) *Quot
 	return q
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (q *Quoted) Type() string { return "Quoted" }
 
 func (q *Quoted) cmpValue() any { return q.value }

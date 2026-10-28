@@ -22,6 +22,7 @@ func newMixinCall(elements []*Element, args []mixinArg, index int, fi *FileInfo,
 	return m
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (m *MixinCall) Type() string { return "MixinCall" }
 
 func (m *MixinCall) accept(v visitor) {
@@ -287,6 +288,7 @@ func newMixinDefinition(name string, params []mixinArg, rules []Node, cond Node,
 	return md
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (md *MixinDefinition) Type() string { return "MixinDefinition" }
 
 func (md *MixinDefinition) base() *nodeBase { return &md.Ruleset.nodeBase }

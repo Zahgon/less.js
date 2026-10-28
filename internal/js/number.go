@@ -9,6 +9,7 @@ import (
 // RangeError is the error Number.prototype.toFixed throws for a digits argument outside 0 to 100.
 type RangeError struct{ Message string }
 
+// Error returns the message the JavaScript runtime gives a RangeError.
 func (e *RangeError) Error() string { return "RangeError: " + e.Message }
 
 // ToFixed formats x like Number.prototype.toFixed(digits): the exact binary value is rounded to digits decimals

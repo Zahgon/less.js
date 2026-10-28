@@ -150,6 +150,7 @@ type jsString struct {
 	v string
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (s *jsString) Type() string { return "" }
 
 func init() {

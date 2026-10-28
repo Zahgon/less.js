@@ -20,6 +20,7 @@ func newExpression(v []Node, noSpacing bool) *Expression {
 	return e
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (e *Expression) Type() string { return "Expression" }
 
 func (e *Expression) cmpValue() any { return e.value }
@@ -96,6 +97,7 @@ type Paren struct {
 
 func newParen(n Node) *Paren { return &Paren{value: n} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (p *Paren) Type() string { return "Paren" }
 
 func (p *Paren) cmpValue() any { return p.value }
@@ -127,6 +129,7 @@ type Negative struct {
 
 func newNegative(n Node) *Negative { return &Negative{value: n} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (n *Negative) Type() string { return "Negative" }
 
 func (n *Negative) cmpValue() any { return n.value }
@@ -156,6 +159,7 @@ type Assignment struct {
 
 func newAssignment(key string, v Node) *Assignment { return &Assignment{key: key, value: v} }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (a *Assignment) Type() string { return "Assignment" }
 
 func (a *Assignment) cmpValue() any { return a.value }
@@ -189,6 +193,7 @@ func newAttribute(key Node, keyStr, op string, value Node, valueStr, cif string)
 	return &Attribute{key: key, keyStr: keyStr, op: op, value: value, valueStr: valueStr, cif: cif}
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (a *Attribute) Type() string { return "Attribute" }
 
 func (a *Attribute) eval(ctx *evalContext) Node {

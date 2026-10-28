@@ -36,6 +36,7 @@ func newDeclaration(nameNodes []Node, name string, value Node, important, merge 
 	return d
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (d *Declaration) Type() string { return "Declaration" }
 
 func (d *Declaration) cmpValue() any { return d.value }

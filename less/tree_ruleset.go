@@ -36,6 +36,7 @@ func newRuleset(selectors []*Selector, rules []Node, strictImports bool, vis *vi
 	return r
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (r *Ruleset) Type() string { return "Ruleset" }
 
 func (r *Ruleset) isRulesetLike() bool { return true }

@@ -11,6 +11,7 @@ type jsBool struct {
 	v bool
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (b *jsBool) Type() string { return "" }
 
 func (b *jsBool) cmpValue() any { return nil }
@@ -43,6 +44,7 @@ func newCondition(op string, l, r Node, index int, negate bool) *Condition {
 	return c
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *Condition) Type() string { return "Condition" }
 
 func (c *Condition) accept(v visitor) {
@@ -91,6 +93,7 @@ func newQueryInParens(op string, l, m Node, op2 string, r Node, index int) *Quer
 	return q
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (q *QueryInParens) Type() string { return "QueryInParens" }
 
 func (q *QueryInParens) accept(v visitor) {
@@ -157,6 +160,7 @@ func newExtendVis(sel *Selector, option string, index int, fi *FileInfo, vis *vi
 	return e
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (e *Extend) Type() string { return "Extend" }
 
 func (e *Extend) accept(v visitor) {
@@ -203,6 +207,7 @@ func newJavaScript(s string, escaped bool, index int, fi *FileInfo) *JavaScript 
 	return j
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (j *JavaScript) Type() string { return "JavaScript" }
 
 func (j *JavaScript) eval(ctx *evalContext) Node {

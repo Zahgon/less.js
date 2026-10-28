@@ -55,6 +55,7 @@ func parseHexByte(s string) float64 {
 	return float64(n)
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *Color) Type() string { return "Color" }
 
 func (c *Color) setParensInOp() { c.parensInOp = true }

@@ -53,6 +53,7 @@ func newVariable(name string, index int, fi *FileInfo) *Variable {
 	return v
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (v *Variable) Type() string { return "Variable" }
 
 func (v *Variable) setParensInOp() { v.parensInOp = true }
@@ -110,6 +111,7 @@ func newProperty(name string, index int, fi *FileInfo) *Property {
 	return p
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (p *Property) Type() string { return "Property" }
 
 func (p *Property) setParensInOp() { p.parensInOp = true }
@@ -159,6 +161,7 @@ func newVariableCall(name string, index int, fi *FileInfo) *VariableCall {
 	return c
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *VariableCall) Type() string { return "VariableCall" }
 
 func (c *VariableCall) eval(ctx *evalContext) Node {
@@ -206,6 +209,7 @@ func newDetachedRuleset(rs *Ruleset, frames []Node) *DetachedRuleset {
 	return d
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (d *DetachedRuleset) Type() string { return "DetachedRuleset" }
 
 func (d *DetachedRuleset) accept(v visitor) {
@@ -243,6 +247,7 @@ func newNamespaceValue(call Node, lookups []string, index int, fi *FileInfo) *Na
 	return n
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (n *NamespaceValue) Type() string { return "NamespaceValue" }
 
 func (n *NamespaceValue) cmpValue() any { return n.value }
@@ -311,6 +316,7 @@ type nodeList struct {
 	nodes []Node
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (l *nodeList) Type() string { return "" }
 
 func lastDeclaration(rs frameNode) *Declaration {

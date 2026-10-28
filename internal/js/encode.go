@@ -9,6 +9,7 @@ import (
 // URIError is the error encodeURI and encodeURIComponent throw for a lone surrogate.
 type URIError struct{}
 
+// Error returns the message the JavaScript runtime gives a URIError.
 func (e *URIError) Error() string { return "URIError: URI malformed" }
 
 const (

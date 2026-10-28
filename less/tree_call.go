@@ -19,6 +19,7 @@ func newOperation(op string, operands []Node, isSpaced bool) *Operation {
 	return &Operation{op: strings.TrimSpace(op), operands: operands, isSpaced: isSpaced}
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (o *Operation) Type() string { return "Operation" }
 
 func (o *Operation) setParensInOp() { o.parensInOp = true }
@@ -103,6 +104,7 @@ func newCall(name string, args []Node, index int, fi *FileInfo) *Call {
 	return c
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (c *Call) Type() string { return "Call" }
 
 func (c *Call) setParensInOp() { c.parensInOp = true }
@@ -195,6 +197,7 @@ func newURL(v Node, index int, fi *FileInfo, isEvald bool) *URL {
 	return u
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (u *URL) Type() string { return "Url" }
 
 func (u *URL) cmpValue() any { return u.value }

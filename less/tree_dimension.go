@@ -60,6 +60,7 @@ func newUnit(numerator, denominator []string, backupUnit string) *Unit {
 	return u
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (u *Unit) Type() string { return "Unit" }
 
 func (u *Unit) clone() *Unit { return newUnit(u.numerator, u.denominator, u.backupUnit) }
@@ -76,6 +77,7 @@ func (u *Unit) genCSS(ctx *evalContext, out *output) {
 	}
 }
 
+// String returns the unit as CSS prints it (unit.js toString).
 func (u *Unit) String() string {
 	s := strings.Join(u.numerator, "*")
 	for _, d := range u.denominator {
@@ -194,6 +196,7 @@ func newDimensionFromString(v, unit string) *Dimension {
 	return newDimension(js.ParseFloat(v), u)
 }
 
+// Type is the node's type name, as the original's type getter reports it.
 func (d *Dimension) Type() string { return "Dimension" }
 
 func (d *Dimension) setParensInOp() { d.parensInOp = true }

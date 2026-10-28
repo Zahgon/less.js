@@ -100,3 +100,16 @@ func TestStdinAndErrors(t *testing.T) {
 		t.Errorf("missing input: %d %q", code, errOut)
 	}
 }
+
+// failingWriter is a stream whose writes fail, like a closed pipe.
+type failingWriter struct{}
+
+func (failingWriter) Write([]byte) (int, error) { return 0, os.ErrClosed }
+
+func TestWriteFailureFailsTheRun(t *testing.T) {
+	var errOut bytes.Buffer
+	c := &lessc{stdin: strings.NewReader(".a { b: c }"), stdout: failingWriter{}, stderr: &errOut, cwd: t.TempDir()}
+	if code := c.run([]string{"-"}); code != 1 || !strings.HasPrefix(errOut.String(), "lessc: ") {
+		t.Errorf("got %d %q", code, errOut.String())
+	}
+}

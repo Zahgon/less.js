@@ -88,4 +88,5 @@ func isWordChar(c rune) bool {
 // SyntaxError is a pattern or flags error with V8's message text.
 type SyntaxError struct{ Message string }
 
+// Error returns the SyntaxError message, worded as V8 words it.
 func (e *SyntaxError) Error() string { return e.Message }

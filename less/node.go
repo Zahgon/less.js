@@ -307,6 +307,7 @@ func (o *output) isEmpty() bool {
 	return len(o.strs) == 0
 }
 
+// String returns the generated CSS.
 func (o *output) String() string { return strings.Join(o.strs, "") }
 
 func itoa(i int) string { return strconv.Itoa(i) }

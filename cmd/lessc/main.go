@@ -58,6 +58,7 @@ type lessc struct {
 	queuePlugins        []pluginRequest
 	pendingDeprecations []string
 	args                []string
+	writeErr            error
 }
 
 func main() {
@@ -71,7 +72,12 @@ func main() {
 }
 
 // write writes text the way Node writes a JavaScript string to a stream: as UTF-8 with lone surrogates replaced.
-func (c *lessc) write(w io.Writer, s string) { io.WriteString(w, js.ToUTF8(s)) }
+// The first failed write is kept and makes the run fail.
+func (c *lessc) write(w io.Writer, s string) {
+	if _, err := io.WriteString(w, js.ToUTF8(s)); err != nil && c.writeErr == nil {
+		c.writeErr = err
+	}
+}
 
 func (c *lessc) println(w io.Writer, s string) { c.write(w, s+"\n") }
 
@@ -162,6 +168,11 @@ func (c *lessc) run(argv []string) int {
 		c.processPluginQueue()
 	} else {
 		c.render()
+	}
+	if c.writeErr != nil {
+		// standard output or standard error could not be written: report it where possible and fail
+		fmt.Fprintln(c.stderr, "lessc: "+c.writeErr.Error())
+		return 1
 	}
 	return c.exitCode
 }
