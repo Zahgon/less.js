@@ -33,6 +33,9 @@ type Logger struct {
 	Error func(string)
 }
 
+// LogInfo reports an informational message to the installed listener, as less.logger.info does.
+func LogInfo(msg string) { lessLogger.info(msg) }
+
 // SetLogger installs the listener for warnings and information messages.
 func SetLogger(l Logger) {
 	lessLogger.onWarn, lessLogger.onInfo, lessLogger.onError = l.Warn, l.Info, l.Error

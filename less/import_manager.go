@@ -1,7 +1,6 @@
 package less
 
 import (
-	"os"
 	pathpkg "path"
 	"strings"
 
@@ -12,6 +11,7 @@ import (
 // importManager is lib/less/import-manager.js. Loads are queued and complete in request order when drained.
 type importManager struct {
 	contents             map[string]string
+	contentsOrder        []string // keys of contents in insertion order, like a JavaScript object's
 	contentsIgnoredChars map[string]int
 	files                map[string]*importedFile
 	fileOrder            []string
@@ -30,6 +30,14 @@ type importedFile struct {
 func newImportManager(ctx *parseContext, root *FileInfo) *importManager {
 	return &importManager{contents: map[string]string{}, contentsIgnoredChars: map[string]int{},
 		files: map[string]*importedFile{}, rootFilename: root.Filename, paths: ctx.paths, context: ctx}
+}
+
+// setContents records a file's text, keeping the first-insertion order of the file names.
+func (m *importManager) setContents(filename, text string) {
+	if _, ok := m.contents[filename]; !ok {
+		m.contentsOrder = append(m.contentsOrder, filename)
+	}
+	m.contents[filename] = text
 }
 
 func (m *importManager) contentsOf(filename string) (string, bool) {
@@ -83,24 +91,28 @@ func (m *importManager) push(path string, tryAppend bool, current *FileInfo, opt
 		}
 	}
 	m.pending = append(m.pending, func() {
-		contents, filename, err := loadFile(path, current.CurrentDirectory, m.context.paths, ext)
+		lo := loadOptions{paths: m.context.paths, ext: ext}
+		if opts.isPlugin && !isExplicitPlugin(path) {
+			lo.prefixes = []string{"less-plugin-", ""}
+		}
+		f, err := loadFileWith(path, current.CurrentDirectory, lo)
 		if err != nil {
 			parsed(err, nil, nil, "", false)
 			return
 		}
-		contents = strings.TrimPrefix(contents, "\uFEFF")
+		contents, filename := strings.TrimPrefix(f.contents, "\uFEFF"), f.filename
 		info.CurrentDirectory = getPath(filename)
 		if m.context.rewriteUrls != 0 {
 			info.Rootpath = joinPath(m.context.rootpath, pathDiff(info.CurrentDirectory, info.EntryPath))
 		}
 		info.Filename = filename
-		m.contents[filename] = contents
+		m.setContents(filename, contents)
 		if current.Reference || isTrue(opts.reference) {
 			info.Reference = true
 		}
 		switch {
 		case opts.isPlugin:
-			parsed(&errorInfo{Message: "Plugins are not supported by this implementation"}, nil, nil, filename, true)
+			parsed(&errorInfo{Type: "Plugin", Message: "JavaScript plugins cannot run in the Go implementation: " + filename}, nil, nil, filename, true)
 		case isTrue(opts.inline):
 			parsed(nil, nil, &contents, filename, true)
 		default:
@@ -121,62 +133,6 @@ func (m *importManager) push(path string, tryAppend bool, current *FileInfo, opt
 		}
 	})
 }
-
-// loadFile is lib/less-node/file-manager.js loadFile: it tries every search path and records each attempt.
-func loadFile(filename, currentDirectory string, optPaths []string, ext string) (string, string, *errorInfo) {
-	absolute := isPathAbsoluteFM(filename)
-	prefix := js.Slice16(filename, 0, 1)
-	explicit := prefix == "." || prefix == "/"
-	var tried []string
-	paths := []string{currentDirectory}
-	if absolute {
-		paths = []string{""}
-	}
-	paths = append(paths, optPaths...)
-	if !absolute {
-		hasDot := false
-		for _, p := range paths {
-			if p == "." {
-				hasDot = true
-			}
-		}
-		if !hasDot {
-			paths = append(paths, ".")
-		}
-	}
-	parts := extractURLParts(filename)
-	for _, dir := range paths {
-		full := parts.rawPath + parts.filename
-		if dir != "" {
-			if strings.HasPrefix(dir, "#") {
-				full = dir[1:] + full
-			} else {
-				full = nodeJoin(dir, full)
-			}
-		}
-		if !explicit && dir == "." {
-			tried = append(tried, "npm://"+full)
-		}
-		extFilename := full
-		if ext != "" {
-			extFilename = tryAppendExtension(full, ext)
-		}
-		if extFilename != full && !explicit && dir == "." {
-			tried = append(tried, "npm://"+extFilename)
-		}
-		full = extFilename
-		data, err := os.ReadFile(full)
-		if err != nil {
-			tried = append(tried, full)
-			continue
-		}
-		return decodeUTF8(data), full, nil
-	}
-	return "", "", &errorInfo{Type: "File", Message: "'" + filename + "' wasn't found. Tried - " + strings.Join(tried, ",")}
-}
-
-// decodeUTF8 reads bytes as Node does with the utf-8 encoding: invalid sequences become U+FFFD.
-func decodeUTF8(b []byte) string { return strings.ToValidUTF8(string(b), "\uFFFD") }
 
 // nodeJoin is Node's path.join for POSIX paths.
 func nodeJoin(a, b string) string {

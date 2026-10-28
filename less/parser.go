@@ -380,7 +380,7 @@ func (p *parser) parse(str string, additional *Options) (root *Ruleset, err *err
 	}
 	str = strings.ReplaceAll(strings.ReplaceAll(str, "\r\n", "\n"), "\r", "\n")
 	str = preText + strings.TrimPrefix(str, "\uFEFF") + modifyVars
-	p.imports.contents[p.fileInfo.Filename] = str
+	p.imports.setContents(p.fileInfo.Filename, str)
 	func() {
 		defer func() {
 			if r := recover(); r != nil {

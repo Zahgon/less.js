@@ -78,3 +78,58 @@ func QuoteJSON(s string) string {
 	b.WriteByte('"')
 	return b.String()
 }
+
+// DecodeUTF8 decodes bytes the way Node's utf-8 decoder does (the WHATWG algorithm): every maximal invalid
+// subsequence becomes one U+FFFD.
+func DecodeUTF8(b []byte) string {
+	if utf8.Valid(b) {
+		return string(b)
+	}
+	var out strings.Builder
+	for i := 0; i < len(b); {
+		c := b[i]
+		if c < 0x80 {
+			out.WriteByte(c)
+			i++
+			continue
+		}
+		need, lower, upper := 0, byte(0x80), byte(0xBF)
+		switch {
+		case c >= 0xC2 && c <= 0xDF:
+			need = 1
+		case c >= 0xE0 && c <= 0xEF:
+			need = 2
+			if c == 0xE0 {
+				lower = 0xA0
+			} else if c == 0xED {
+				upper = 0x9F
+			}
+		case c >= 0xF0 && c <= 0xF4:
+			need = 3
+			if c == 0xF0 {
+				lower = 0x90
+			} else if c == 0xF4 {
+				upper = 0x8F
+			}
+		default:
+			out.WriteString("\uFFFD")
+			i++
+			continue
+		}
+		j := i + 1
+		for k := 0; k < need; k++ {
+			if j >= len(b) || b[j] < lower || b[j] > upper {
+				break
+			}
+			lower, upper = 0x80, 0xBF
+			j++
+		}
+		if j-i == need+1 {
+			out.Write(b[i:j])
+		} else {
+			out.WriteString("\uFFFD")
+		}
+		i = j
+	}
+	return out.String()
+}

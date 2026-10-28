@@ -52,11 +52,14 @@ func setStringValue(n Node, s string) {
 }
 
 // failStringValue raises the TypeError a string method call raises on a node value that is not a string.
-func failStringValue(n Node, method string) {
+func failStringValue(n Node, method string) { failStringValueAs(n, "path", method) }
+
+// failStringValueAs is failStringValue for a value held in the named JavaScript variable.
+func failStringValueAs(n Node, variable, method string) {
 	switch n.(type) {
 	case *Dimension, *Expression, *Value, *Anonymous, *URL, *Assignment, *Declaration, *Paren, *Negative,
 		*Attribute, *Element, *NamespaceValue:
-		typeError("path." + method + " is not a function")
+		typeError(variable + "." + method + " is not a function")
 	}
 	typeError("Cannot read properties of undefined (reading '" + method + "')")
 }
