@@ -14,7 +14,13 @@ type visitorImpl interface {
 	visitOut(n any)
 }
 
-type visitor = *Visitor
+// visitor is what a node's accept receives: the generic Visitor or the visibility visitor, which walks
+// without visit<Type> dispatch.
+type visitor interface {
+	visit(n Node) Node
+	visitAny(n Node) any
+	visitArray(nodes []Node, nonReplacing ...bool) []Node
+}
 
 // Visitor walks a tree, calling the implementation for each node.
 type Visitor struct {

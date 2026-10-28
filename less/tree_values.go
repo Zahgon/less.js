@@ -72,6 +72,12 @@ func (a *Anonymous) compare(other Node) cmpResult {
 
 func (a *Anonymous) isRulesetLike() bool { return a.rulesetLike }
 
+func (a *Anonymous) accept(v visitor) {
+	if a.valueNode != nil {
+		a.valueNode = v.visit(a.valueNode)
+	}
+}
+
 func (a *Anonymous) genCSS(ctx *evalContext, out *output) {
 	visible := a.value != "" || a.valueNode != nil
 	a.nodeVisible = &visible

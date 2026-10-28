@@ -247,6 +247,8 @@ func (n *NamespaceValue) Type() string { return "NamespaceValue" }
 
 func (n *NamespaceValue) cmpValue() any { return n.value }
 
+func (n *NamespaceValue) accept(v visitor) { n.value = v.visit(n.value) }
+
 func (n *NamespaceValue) eval(ctx *evalContext) Node {
 	rules := evalNode(n.value, ctx)
 	for _, name := range n.lookups {
